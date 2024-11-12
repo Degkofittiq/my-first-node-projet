@@ -24,7 +24,14 @@ module.exports = (sequelize, DataTypes) => {
       },
       types: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        get() {
+          const types = this.getDataValue('types');
+          return typeof types === 'string' ? types.split(',') : [];
+        },
+        set(types) {
+          this.setDataValue('types', Array.isArray(types) ? types.join(',') : types);
+        }
       }
     }, {
       timestamps: true,
