@@ -2,9 +2,10 @@ const express = require('express')
 const morgan = require('morgan')
 const favicon = require('serve-favicon')
 const bodyParser = require('body-parser')
-const { Sequelize } = require('sequelize')
+const { Sequelize, DataTypes } = require('sequelize')
 const { success,getUniqueId } = require('./helper.js')
 let pokemons = require('./mock-pokemon');
+const PokemonModel = require('./src/models/pokemon.js')
 
 const app = express()
 const port = 3000
@@ -26,6 +27,32 @@ const sequelize = new Sequelize(
 sequelize.authenticate()
     .then(_ => console.log('Connexion successfull !'))
     .catch(error => console.error(`Can't etablished the DB connexion: ${error}`))
+
+const Pokemon = PokemonModel(sequelize, DataTypes)
+
+sequelize.sync({force: true})
+    .then(_ => {
+        console.log('The DB  "Pokedex" is been created.')
+        
+        pokemons.map(pokemon => {
+            Pokemon.create({
+                name: pokemon.name,
+                hp: pokemon.hp,
+                cp: pokemon.cp,
+                picture: pokemon.picture,
+                types: pokemon.types.join()
+            }).then(Pikachu => console.log(Pikachu.toJSON()))
+        })
+
+        // Pokemon.create({
+        //         name: 'Builbizarre',
+        //         hp: 23,
+        //         cp: 9,
+        //         picture: 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png',
+        //         types: ["Courant","Teteyoo"].join()
+        // }).then(Pikachu => console.log(Pikachu.toJSON()))
+    })
+
 
 app
     .use(favicon(__dirname + '/favicon.ico'))
