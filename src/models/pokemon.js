@@ -1,41 +1,45 @@
 /* L’API Rest et la Base de données : Créer un modèle Sequelize */
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('Pokemon', {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      hp: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      cp: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      picture: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      types: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        get() {
-          const types = this.getDataValue('types');
-          return typeof types === 'string' ? types.split(',') : [];
-        },
-        set(types) {
-          this.setDataValue('types', Array.isArray(types) ? types.join(',') : types);
-        }
+  return sequelize.define('Pokemon', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    hp: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate:{
+        isInt: { msg: 'Uniquement des chiffres sont autorises.' },
+        notNull: { msg: 'Les points de vie sont une propriete requise.' }
       }
-    }, {
-      timestamps: true,
-      createdAt: 'created',
-      updatedAt: true
-    })
-  }
+    },
+    cp: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    picture: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    types: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      get() {
+        const types = this.getDataValue('types');
+        return typeof types === 'string' ? types.split(',') : [];
+      },
+      set(types) {
+        this.setDataValue('types', Array.isArray(types) ? types.join(',') : types);
+      }
+    }
+  }, {
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: true
+  })
+}
