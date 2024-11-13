@@ -14,12 +14,15 @@ module.exports = (app) => {
           return res.status(404).json({message})          
         }
         const message = `Le pokémon ${pokemon.name} a bien été modifié.`
-        res.json({message, data: pokemon })
+        res.json({ message, data: pokemon })
       })
     })
     .catch(error => {
       if(error instanceof ValidationError) {
         return res.status(400).json({message: error.message, data: error})
+      }
+      if (error instanceof UniqueConstraintError) {
+        return res.status(400).json({ message: error.message, data: error })
       }
         const message = 'Le pokemon n\'a pas pu etre mis a jour, reesayez'
       res.status(500).json({ message, error })
